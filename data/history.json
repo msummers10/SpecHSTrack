@@ -1,7 +1,12 @@
 [
-  {
-    "date": "2025-12-20",
+   {
+    "date": "2025-10-17",
     "cities": [
+      {
+        "city": "Lexington, KY",
+        "lat": 38.0479897,
+        "lon": -84.5016402
+      },
       {
         "city": "Cincinnati, OH",
         "lat": 39.1014537,
@@ -18,7 +23,57 @@
         "lon": -77.615214
       },
       {
-        "city": "Fort Worth, TX",
+        "city": "Dallas/Fort Worth, TX",
+        "lat": 32.753177,
+        "lon": -97.3327459
+      },
+      {
+        "city": "Louisville, KY",
+        "lat": 38.2542376,
+        "lon": -85.759407
+      },
+      {
+        "city": "Rochester, MN",
+        "lat": 44.0234387,
+        "lon": -92.4630182
+      },
+      {
+        "city": "Reno, NV",
+        "lat": 39.5308952,
+        "lon": -119.8149722
+      },
+      {
+        "city": "Northport, AL",
+        "lat": 33.2292976,
+        "lon": -87.5771286
+      }
+    ]
+  },
+  {
+    "date": "2025-12-20",
+    "cities": [
+       {
+        "city": "Lexington, KY",
+        "lat": 38.0479897,
+        "lon": -84.5016402
+      },
+      {
+        "city": "Cincinnati, OH",
+        "lat": 39.1014537,
+        "lon": -84.5124602
+      },
+      {
+        "city": "St. Louis, MO",
+        "lat": 38.6280278,
+        "lon": -90.1910154
+      },
+      {
+        "city": "Rochester, NY",
+        "lat": 43.157285,
+        "lon": -77.615214
+      },
+      {
+        "city": "Dallas/Fort Worth, TX",
         "lat": 32.753177,
         "lon": -97.3327459
       },
@@ -45,7 +100,7 @@
     ]
   },
   {
-    "date": "2025-12-20",
+    "date": "2025-12-31",
     "cities": [
       {
         "city": "Lexington, KY",
