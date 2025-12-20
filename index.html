@@ -6,15 +6,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a1a; color: white;}
-        #map { height: 85vh; width: 100%; }
-        #controls { padding: 15px; background: #2c3e50; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;}
-        h2 { margin: 0 20px 0 0; font-size: 1.2rem;}
+        /* --- General Layout --- */
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a1a; color: white; display: flex; flex-direction: column; height: 100vh;}
+        
+        /* Map Section */
+        #map-container { flex: 2; position: relative; } /* Takes up 2/3 of screen */
+        #map { height: 100%; width: 100%; }
+
+        /* Controls */
+        #controls { padding: 10px 20px; background: #2c3e50; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; border-bottom: 1px solid #444;}
+        h2 { margin: 0 15px 0 0; font-size: 1.1rem;}
         .slider-container { flex-grow: 1; margin: 0 20px; display: flex; align-items: center;}
         input[type=range] { width: 100%; margin-right: 15px; cursor: pointer;}
-        #dateLabel { font-family: monospace; font-size: 1.2rem; background: #34495e; padding: 5px 10px; border-radius: 4px;}
-        .legend { font-size: 0.9rem; }
-        .dot { height: 10px; width: 10px; display: inline-block; border-radius: 50%; margin-right: 5px;}
+        #dateLabel { font-family: monospace; font-size: 1.1rem; background: #34495e; padding: 4px 8px; border-radius: 4px;}
+        
+        .legend { font-size: 0.8rem; display: flex; gap: 15px; align-items: center;}
+        .dot { height: 10px; width: 10px; display: inline-block; border-radius: 50%; margin-right: 4px;}
+
+        /* --- New List Section --- */
+        #list-container { 
+            flex: 1; /* Takes up 1/3 of screen */
+            background: #222; 
+            padding: 20px; 
+            overflow-y: auto; /* Allows scrolling */
+            display: flex; 
+            gap: 20px;
+            border-top: 4px solid #444;
+        }
+
+        .list-column { flex: 1; background: #2a2a2a; padding: 15px; border-radius: 8px; }
+        .list-column h3 { margin-top: 0; border-bottom: 2px solid #444; padding-bottom: 10px; font-size: 1rem; color: #ddd; }
+        
+        .city-list { list-style: none; padding: 0; margin: 0; font-size: 0.9rem; columns: 2; } /* columns:2 makes names flow into 2 columns per box */
+        .city-list li { margin-bottom: 5px; color: #bbb; }
+        
+        /* Highlight new items in the list */
+        .new-item { color: #2ecc71 !important; font-weight: bold; }
+        .new-item::after { content: " (NEW)"; font-size: 0.7em; margin-left: 5px; }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -26,16 +59,29 @@
         <span id="dateLabel">Loading...</span>
     </div>
     <div class="legend">
-        <span class="dot" style="background:#3388ff;"></span>Existing
-        <span class="dot" style="background:#2ecc71; margin-left:10px;"></span>New
+        <div><span class="dot" style="background:#3388ff;"></span>Completed/Not Enabled</div>
+        <div><span class="dot" style="background:#f1c40f;"></span>Pending/2025/26</div>
     </div>
 </div>
 
-<div id="map"></div>
+<div id="map-container">
+    <div id="map"></div>
+</div>
+
+<div id="list-container">
+    <div class="list-column" style="border-left: 4px solid #3388ff;">
+        <h3>Completed / Not Yet Enabled <span id="count-blue" style="font-size:0.8em; float:right;">0</span></h3>
+        <ul id="list-blue" class="city-list"></ul>
+    </div>
+
+    <div class="list-column" style="border-left: 4px solid #f1c40f;">
+        <h3>Pending / 2025 / 2026 <span id="count-yellow" style="font-size:0.8em; float:right;">0</span></h3>
+        <ul id="list-yellow" class="city-list"></ul>
+    </div>
+</div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    // 1. Initialize Map
     var map = L.map('map').setView([39.8283, -98.5795], 4);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; OpenStreetMap &copy; CARTO',
@@ -45,7 +91,6 @@
     var layerGroup = L.layerGroup().addTo(map);
     var historyData = [];
 
-    // 2. Load Data
     fetch('data/history.json')
         .then(response => response.json())
         .then(data => {
@@ -53,24 +98,18 @@
             setupSlider();
         })
         .catch(err => {
-            console.error("Could not load data. Ensure scrape.py has run at least once.", err);
+            console.error("No data found.", err);
             document.getElementById('dateLabel').innerText = "No Data Yet";
         });
 
-    // 3. Setup Slider
     function setupSlider() {
         var slider = document.getElementById('timeSlider');
         slider.max = historyData.length - 1;
-        slider.value = historyData.length - 1; // Start at end
-        
+        slider.value = historyData.length - 1; 
         updateMap(slider.value);
-
-        slider.addEventListener('input', function(e) {
-            updateMap(e.target.value);
-        });
+        slider.addEventListener('input', function(e) { updateMap(e.target.value); });
     }
 
-    // 4. Render Map Logic
     function updateMap(index) {
         index = parseInt(index);
         var snapshot = historyData[index];
@@ -79,34 +118,64 @@
         document.getElementById('dateLabel').innerText = snapshot.date;
         layerGroup.clearLayers();
 
-        // Build set of previous cities to detect "New" ones
+        // Clear Lists
+        var listBlue = document.getElementById('list-blue');
+        var listYellow = document.getElementById('list-yellow');
+        listBlue.innerHTML = "";
+        listYellow.innerHTML = "";
+        
+        var countBlue = 0;
+        var countYellow = 0;
+
         var prevCities = new Set();
         if (prevSnapshot) {
             prevSnapshot.cities.forEach(c => prevCities.add(c.city));
         }
 
+        // We sort cities alphabetically for the list
+        snapshot.cities.sort((a, b) => a.city.localeCompare(b.city));
+
         snapshot.cities.forEach(place => {
             var isNew = (index > 0) && !prevCities.has(place.city);
             
-            // Standard Blue Marker
-            var color = "#3388ff"; 
-            var radius = 6000;
-            
-            // New (Green) Marker
-            if (isNew) {
-                color = "#2ecc71";
-                radius = 12000; // Make it pop
-            }
+            // --- 1. Map Logic ---
+            var fillColor = "#3388ff"; 
+            if (place.color === 'yellow') fillColor = "#f1c40f";
+
+            var strokeColor = isNew ? "#2ecc71" : fillColor;
+            var strokeWidth = isNew ? 3 : 1;
+            var radius = isNew ? 10000 : 6000;
+            var fillOpacity = isNew ? 0.9 : 0.6;
 
             var circle = L.circle([place.lat, place.lon], {
-                color: color,
-                fillColor: color,
-                fillOpacity: 0.7,
+                color: strokeColor,
+                weight: strokeWidth,
+                fillColor: fillColor,
+                fillOpacity: fillOpacity,
                 radius: radius
-            }).bindPopup(`<b>${place.city}</b><br>${isNew ? "✨ NEW UPDATE!" : "Status: Active"}`);
-
+            }).bindPopup(`<b>${place.city}</b>`);
             layerGroup.addLayer(circle);
+
+            // --- 2. List Logic ---
+            var li = document.createElement('li');
+            li.textContent = place.city;
+            
+            if (isNew) {
+                li.className = "new-item";
+            }
+
+            if (place.color === 'yellow') {
+                listYellow.appendChild(li);
+                countYellow++;
+            } else {
+                listBlue.appendChild(li);
+                countBlue++;
+            }
         });
+
+        // Update counts
+        document.getElementById('count-blue').innerText = countBlue;
+        document.getElementById('count-yellow').innerText = countYellow;
     }
 </script>
 </body>
