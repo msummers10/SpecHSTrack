@@ -1,5 +1,5 @@
 [
-   {
+  {
     "date": "2025-10-17",
     "cities": [
       {
@@ -52,7 +52,7 @@
   {
     "date": "2025-12-20",
     "cities": [
-       {
+      {
         "city": "Lexington, KY",
         "lat": 38.0479897,
         "lon": -84.5016402
@@ -101,6 +101,71 @@
   },
   {
     "date": "2025-12-31",
+    "cities": [
+      {
+        "city": "Lexington, KY",
+        "lat": 38.0464066,
+        "lon": -84.4970393,
+        "color": "yellow"
+      },
+      {
+        "city": "Cincinnati, OH",
+        "lat": 39.1014537,
+        "lon": -84.5124602,
+        "color": "yellow"
+      },
+      {
+        "city": "St. Louis, MO",
+        "lat": 38.6280278,
+        "lon": -90.1910154,
+        "color": "yellow"
+      },
+      {
+        "city": "Rochester, NY",
+        "lat": 43.157285,
+        "lon": -77.615214,
+        "color": "yellow"
+      },
+      {
+        "city": "Fort Worth, TX",
+        "lat": 32.753177,
+        "lon": -97.3327459,
+        "color": "yellow"
+      },
+      {
+        "city": "Louisville, KY",
+        "lat": 38.2542376,
+        "lon": -85.759407,
+        "color": "yellow"
+      },
+      {
+        "city": "Rochester, MN",
+        "lat": 44.0234387,
+        "lon": -92.4630182,
+        "color": "yellow"
+      },
+      {
+        "city": "Tahoe, NV",
+        "lat": 39.0885405,
+        "lon": -120.0503528,
+        "color": "yellow"
+      },
+      {
+        "city": "Conroe, TX",
+        "lat": 30.3118769,
+        "lon": -95.4560512,
+        "color": "yellow"
+      },
+      {
+        "city": "Northport, AL",
+        "lat": 33.2292976,
+        "lon": -87.5771286,
+        "color": "yellow"
+      }
+    ]
+  },
+  {
+    "date": "2025-12-20",
     "cities": [
       {
         "city": "Lexington, KY",
